@@ -1,0 +1,813 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pilih Bidang Kuliner Anda - Game Interaktif</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .game-container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            max-width: 700px;
+            width: 100%;
+            padding: 40px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .game-container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 5px;
+            background: linear-gradient(90deg, #ff6b6b, #4ecdc4, #45b7d1);
+        }
+
+        h1 {
+            color: #2c3e50;
+            font-size: 2.2rem;
+            margin-bottom: 10px;
+            font-weight: 700;
+        }
+
+        .subtitle {
+            color: #7f8c8d;
+            font-size: 1.1rem;
+            margin-bottom: 30px;
+        }
+
+        .question-container {
+            margin-bottom: 30px;
+        }
+
+        .question {
+            font-size: 1.3rem;
+            color: #2c3e50;
+            margin-bottom: 25px;
+            font-weight: 600;
+            line-height: 1.4;
+        }
+
+        .options {
+            display: grid;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        .option-btn {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+            border: none;
+            padding: 16px 20px;
+            border-radius: 12px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            text-align: left;
+        }
+
+        .option-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.2);
+        }
+
+        .option-btn.prep {
+            background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 100%);
+        }
+
+        .option-btn.cooking {
+            background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%);
+        }
+
+        .option-btn.machine {
+            background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);
+        }
+
+        .option-btn.washing {
+            background: linear-gradient(135deg, #d299c2 0%, #fef9d7 100%);
+        }
+
+        .option-btn.storage {
+            background: linear-gradient(135deg, #89f7fe 0%, #66a6ff 100%);
+        }
+
+        .option-btn.sanitation {
+            background: linear-gradient(135deg, #fdbb2d 0%, #22c1c3 100%);
+        }
+
+        .option-btn.environment {
+            background: linear-gradient(135deg, #ee9ca7 0%, #ffdde1 100%);
+        }
+
+        .option-btn.boiler {
+            background: linear-gradient(135deg, #ff512f 0%, #dd2476 100%);
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: #ecf0f1;
+            border-radius: 4px;
+            margin-bottom: 30px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #4ecdc4, #45b7d1);
+            border-radius: 4px;
+            transition: width 0.5s ease;
+        }
+
+        .result-container {
+            display: none;
+            text-align: center;
+        }
+
+        .result-emoji {
+            font-size: 4rem;
+            margin-bottom: 20px;
+        }
+
+        .result-title {
+            font-size: 1.8rem;
+            color: #2c3e50;
+            margin-bottom: 15px;
+            font-weight: 700;
+        }
+
+        .result-description {
+            font-size: 1.1rem;
+            color: #7f8c8d;
+            line-height: 1.6;
+            margin-bottom: 30px;
+            text-align: left;
+        }
+
+        .restart-btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 25px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .restart-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+        }
+
+        .question-number {
+            color: #95a5a6;
+            font-size: 0.9rem;
+            margin-bottom: 10px;
+        }
+
+        @media (max-width: 768px) {
+            .game-container {
+                padding: 30px 20px;
+            }
+            
+            h1 {
+                font-size: 1.8rem;
+            }
+            
+            .question {
+                font-size: 1.1rem;
+            }
+
+            .option-btn {
+                font-size: 0.9rem;
+                padding: 14px 16px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="game-container">
+        <h1>⚠️ Penilaian Keselamatan Kerja Dapur</h1>
+        <p class="subtitle">Evaluasi pemahaman K3 di berbagai aktivitas kuliner</p>
+        
+        <div class="progress-bar">
+            <div class="progress-fill" id="progressFill"></div>
+        </div>
+
+        <div class="question-container" id="questionContainer">
+            <div class="question-number" id="questionNumber">Pertanyaan 1 dari 5</div>
+            <div class="question" id="questionText">Aktivitas - Pilih aktivitas kerja yang akan dievaluasi:</div>
+            <div class="options" id="optionsContainer">
+                <button class="option-btn prep" onclick="selectType('prep')">🔪 Persiapan Bahan (Memotong daging/sayur, dll)</button>
+                <button class="option-btn cooking" onclick="selectType('cooking')">🍳 Memasak (menggoreng, merebus, memanggang, steam)</button>
+                <button class="option-btn machine" onclick="selectType('machine')">⚙️ Menggunakan Mesin (blender, mixer, conveyor, oven industri)</button>
+                <button class="option-btn washing" onclick="selectType('washing')">🧽 Pencucian (dishwashing, cleaning)</button>
+                <button class="option-btn storage" onclick="selectType('storage')">📦 Penyimpanan (bahan baku & produk jadi)</button>
+                <button class="option-btn sanitation" onclick="selectType('sanitation')">🧼 Kebersihan & Sanitasi (Food Safety)</button>
+                <button class="option-btn environment" onclick="selectType('environment')">🏢 Lingkungan Umum Dapur</button>
+                <button class="option-btn boiler" onclick="selectType('boiler')">🔥 Industri Besar – Boiler/Steam Cooker</button>
+            </div>
+        </div>
+
+        <div class="result-container" id="resultContainer">
+            <div class="result-emoji" id="resultEmoji"></div>
+            <div class="result-title" id="resultTitle"></div>
+            <div class="result-description" id="resultDescription"></div>
+            <button class="restart-btn" onclick="restartGame()">Coba Lagi</button>
+        </div>
+    </div>
+
+    <script>
+        let gameState = {
+            currentQuestion: 1,
+            selectedType: '',
+            answers: []
+        };
+
+        const gameData = {
+            prep: {
+                questions: [
+                    {
+                        question: "Potensi bahaya pada Persiapan Bahan:",
+                        options: [
+                            { text: "⚔️ Pisau tajam, talenan licin, kontaminasi silang", value: "correct", class: "prep" },
+                            { text: "🔥 Percikan minyak panas, uap panas, api terbuka", value: "wrong1", class: "prep" },
+                            { text: "⚙️ Bagian mesin bergerak, listrik, noise", value: "wrong2", class: "prep" }
+                        ],
+                        correctAnswer: "correct"
+                    },
+                    {
+                        question: "Risiko yang dapat terjadi:",
+                        options: [
+                            { text: "🩸 Teriris, infeksi, keracunan makanan", value: "correct", class: "prep" },
+                            { text: "🔥 Luka bakar, kebakaran, ledakan", value: "wrong1", class: "prep" },
+                            { text: "⚡ Terjepit, kesetrum, gangguan pendengaran", value: "wrong2", class: "prep" }
+                        ],
+                        correctAnswer: "correct"
+                    },
+                    {
+                        question: "Dampak yang mungkin terjadi:",
+                        options: [
+                            { text: "🏥 Luka ringan–berat, penyakit bawaan pangan", value: "correct", class: "prep" },
+                            { text: "💥 Cedera serius, fatal, kerugian besar", value: "wrong1", class: "prep" },
+                            { text: "🤕 Cedera tangan, luka serius, tuli", value: "wrong2", class: "prep" }
+                        ],
+                        correctAnswer: "correct"
+                    },
+                    {
+                        question: "Kontrol yang sudah ada:",
+                        options: [
+                            { text: "📋 SOP penggunaan pisau, sanitasi alat, Sarung tangan anti-cut, pisau berbeda per bahan, pelatihan HACCP", value: "correct", class: "prep" },
+                            { text: "🛡️ APD (apron, sarung tangan), exhaust fan, SOP cek selang", value: "wrong1", class: "prep" },
+                            { text: "🔧 Guard mesin, tombol emergency stop, instalasi standar", value: "wrong2", class: "prep" }
+                        ],
+                        correctAnswer: "correct"
+                    }
+                ],
+                results: {
+                    perfect: {
+                        emoji: "🏆",
+                        title: "Ahli K3 Persiapan Bahan!",
+                        description: "Excellent! Anda memahami dengan sempurna semua aspek keselamatan dalam persiapan bahan. Dari identifikasi bahaya hingga kontrol yang tepat, pengetahuan K3 Anda sangat baik untuk area prep station."
+                    },
+                    good: {
+                        emoji: "🔪",
+                        title: "Paham K3 Persiapan Bahan",
+                        description: "Bagus! Anda memiliki pemahaman yang solid tentang keselamatan persiapan bahan. Terus tingkatkan awareness terhadap potensi bahaya dan prosedur keselamatan."
+                    },
+                    mixed: {
+                        emoji: "📚",
+                        title: "Perlu Belajar K3 Lebih Dalam",
+                        description: "Anda perlu meningkatkan pemahaman tentang K3 di area persiapan bahan. Fokus pada identifikasi bahaya pisau, kontaminasi silang, dan penggunaan APD yang tepat."
+                    }
+                }
+            },
+            cooking: {
+                questions: [
+                    {
+                        question: "Potensi bahaya pada Memasak:",
+                        options: [
+                            { text: "🔥 Percikan minyak panas, uap panas, api terbuka, kebocoran gas", value: "correct", class: "cooking" },
+                            { text: "⚔️ Pisau tajam, talenan licin, kontaminasi silang", value: "wrong1", class: "cooking" },
+                            { text: "⚙️ Bagian mesin bergerak, listrik, noise", value: "wrong2", class: "cooking" }
+                        ],
+                        correctAnswer: "correct"
+                    },
+                    {
+                        question: "Risiko yang dapat terjadi:",
+                        options: [
+                            { text: "🔥 Luka bakar, kebakaran, ledakan", value: "correct", class: "cooking" },
+                            { text: "🩸 Teriris, infeksi, keracunan makanan", value: "wrong1", class: "cooking" },
+                            { text: "⚡ Terjepit, kesetrum, gangguan pendengaran", value: "wrong2", class: "cooking" }
+                        ],
+                        correctAnswer: "correct"
+                    },
+                    {
+                        question: "Dampak yang mungkin terjadi:",
+                        options: [
+                            { text: "💥 Cedera serius, fatal, kerugian besar", value: "correct", class: "cooking" },
+                            { text: "🏥 Luka ringan–berat, penyakit bawaan pangan", value: "wrong1", class: "cooking" },
+                            { text: "🤕 Cedera tangan, luka serius, tuli", value: "wrong2", class: "cooking" }
+                        ],
+                        correctAnswer: "correct"
+                    },
+                    {
+                        question: "Kontrol yang sudah ada:",
+                        options: [
+                            { text: "🛡️ APD (apron, sarung tangan), exhaust fan, SOP cek selang, Pelindung minyak, gas detector, fire drill, APAR", value: "correct", class: "cooking" },
+                            { text: "📋 SOP penggunaan pisau, sanitasi alat, Sarung tangan anti-cut", value: "wrong1", class: "cooking" },
+                            { text: "🔧 Guard mesin, tombol emergency stop, instalasi standar", value: "wrong2", class: "cooking" }
+                        ],
+                        correctAnswer: "correct"
+                    }
+                ],
+                results: {
+                    perfect: {
+                        emoji: "🏆",
+                        title: "Ahli K3 Memasak!",
+                        description: "Perfect! Anda memahami dengan baik semua aspek keselamatan dalam memasak. Dari bahaya api hingga gas, serta kontrol yang diperlukan. Pengetahuan K3 Anda excellent untuk cooking station."
+                    },
+                    good: {
+                        emoji: "🍳",
+                        title: "Paham K3 Memasak",
+                        description: "Bagus! Anda memiliki awareness yang baik tentang keselamatan memasak. Terus tingkatkan pemahaman tentang fire safety dan penggunaan APD."
+                    },
+                    mixed: {
+                        emoji: "🔥",
+                        title: "Perlu Belajar K3 Memasak",
+                        description: "Anda perlu meningkatkan pemahaman K3 untuk area memasak. Fokus pada bahaya panas, api, gas dan prosedur emergency yang tepat."
+                    }
+                }
+            },
+            machine: {
+                questions: [
+                    {
+                        question: "Potensi bahaya pada Menggunakan Mesin:",
+                        options: [
+                            { text: "⚙️ Bagian mesin bergerak, listrik, noise", value: "correct", class: "machine" },
+                            { text: "🔥 Percikan minyak panas, uap panas, api terbuka", value: "wrong1", class: "machine" },
+                            { text: "⚔️ Pisau tajam, talenan licin, kontaminasi silang", value: "wrong2", class: "machine" }
+                        ],
+                        correctAnswer: "correct"
+                    },
+                    {
+                        question: "Risiko yang dapat terjadi:",
+                        options: [
+                            { text: "⚡ Terjepit, kesetrum, gangguan pendengaran", value: "correct", class: "machine" },
+                            { text: "🔥 Luka bakar, kebakaran, ledakan", value: "wrong1", class: "machine" },
+                            { text: "🩸 Teriris, infeksi, keracunan makanan", value: "wrong2", class: "machine" }
+                        ],
+                        correctAnswer: "correct"
+                    },
+                    {
+                        question: "Dampak yang mungkin terjadi:",
+                        options: [
+                            { text: "🤕 Cedera tangan, luka serius, tuli", value: "correct", class: "machine" },
+                            { text: "💥 Cedera serius, fatal, kerugian besar", value: "wrong1", class: "machine" },
+                            { text: "🏥 Luka ringan–berat, penyakit bawaan pangan", value: "wrong2", class: "machine" }
+                        ],
+                        correctAnswer: "correct"
+                    },
+                    {
+                        question: "Kontrol yang sudah ada:",
+                        options: [
+                            { text: "🔧 Guard mesin, tombol emergency stop, instalasi standar, ELCB listrik, earplug, pelatihan K3 mesin", value: "correct", class: "machine" },
+                            { text: "🛡️ APD (apron, sarung tangan), exhaust fan, SOP cek selang", value: "wrong1", class: "machine" },
+                            { text: "📋 SOP penggunaan pisau, sanitasi alat, Sarung tangan anti-cut", value: "wrong2", class: "machine" }
+                        ],
+                        correctAnswer: "correct"
+                    }
+                ],
+                results: {
+                    perfect: {
+                        emoji: "🏆",
+                        title: "Ahli K3 Mesin!",
+                        description: "Excellent! Anda memahami dengan sempurna keselamatan penggunaan mesin. Dari mechanical hazards hingga electrical safety, pengetahuan Anda sangat baik untuk equipment operation."
+                    },
+                    good: {
+                        emoji: "⚙️",
+                        title: "Paham K3 Mesin",
+                        description: "Bagus! Anda memiliki understanding yang solid tentang machine safety. Terus tingkatkan knowledge tentang lockout/tagout dan maintenance safety."
+                    },
+                    mixed: {
+                        emoji: "🔧",
+                        title: "Perlu Belajar K3 Mesin",
+                        description: "Anda perlu meningkatkan pemahaman tentang machine safety. Fokus pada electrical hazards, moving parts, dan proper guarding systems."
+                    }
+                }
+            },
+            washing: {
+                questions: [
+                    {
+                        question: "Potensi bahaya pada Pencucian:",
+                        options: [
+                            { text: "🧽 Lantai licin, bahan kimia (detergen, sanitizer), uap panas mesin", value: "correct", class: "washing" },
+                            { text: "⚙️ Bagian mesin bergerak, listrik, noise", value: "wrong1", class: "washing" },
+                            { text: "🔥 Percikan minyak panas, uap panas, api terbuka", value: "wrong2", class: "washing" }
+                        ],
+                        correctAnswer: "correct"
+                    },
+                    {
+                        question: "Risiko yang dapat terjadi:",
+                        options: [
+                            { text: "💧 Tergelincir, iritasi kulit, keracunan, luka bakar uap", value: "correct", class: "washing" },
+                            { text: "⚡ Terjepit, kesetrum, gangguan pendengaran", value: "wrong1", class: "washing" },
+                            { text: "🔥 Luka bakar, kebakaran, ledakan", value: "wrong2", class: "washing" }
+                        ],
+                        correctAnswer: "correct"
+                    },
+                    {
+                        question: "Dampak yang mungkin terjadi:",
+                        options: [
+                            { text: "🏥 Cedera fisik, penyakit akibat kerja", value: "correct", class: "washing" },
+                            { text: "🤕 Cedera tangan, luka serius, tuli", value: "wrong1", class: "washing" },
+                            { text: "💥 Cedera serius, fatal, kerugian besar", value: "wrong2", class: "washing" }
+                        ],
+                        correctAnswer: "correct"
+                    },
+                    {
+                        question: "Kontrol yang sudah ada:",
+                        options: [
+                            { text: "⚠️ Papan peringatan lantai basah, MSDS bahan kimia, Lantai anti-slip, ventilasi, APD (sarung tangan karet, masker)", value: "correct", class: "washing" },
+                            { text: "🔧 Guard mesin, tombol emergency stop, instalasi standar", value: "wrong1", class: "washing" },
+                            { text: "🛡️ APD (apron, sarung tangan), exhaust fan, SOP cek selang", value: "wrong2", class: "washing" }
+                        ],
+                        correctAnswer: "correct"
+                    }
+                ],
+                results: {
+                    perfect: {
+                        emoji: "🏆",
+                        title: "Ahli K3 Pencucian!",
+                        description: "Perfect! Anda memahami dengan baik semua aspek keselamatan dalam pencucian. Dari slip hazards hingga chemical safety, pengetahuan K3 Anda excellent untuk dishwashing area."
+                    },
+                    good: {
+                        emoji: "🧽",
+                        title: "Paham K3 Pencucian",
+                        description: "Bagus! Anda memiliki awareness yang baik tentang keselamatan pencucian. Terus tingkatkan pemahaman tentang chemical handling dan slip prevention."
+                    },
+                    mixed: {
+                        emoji: "💧",
+                        title: "Perlu Belajar K3 Pencucian",
+                        description: "Anda perlu meningkatkan pemahaman K3 untuk area pencucian. Fokus pada wet floor hazards, chemical safety, dan proper ventilation."
+                    }
+                }
+            },
+            storage: {
+                questions: [
+                    {
+                        question: "Potensi bahaya pada Penyimpanan:",
+                        options: [
+                            { text: "📦 Suhu tidak sesuai, bahan kimia tersimpan dekat makanan, beban berat di rak", value: "correct", class: "storage" },
+                            { text: "🧽 Lantai licin, bahan kimia (detergen, sanitizer), uap panas mesin", value: "wrong1", class: "storage" },
+                            { text: "⚙️ Bagian mesin bergerak, listrik, noise", value: "wrong2", class: "storage" }
+                        ],
+                        correctAnswer: "correct"
+                    },
+                    {
+                        question: "Risiko yang dapat terjadi:",
+                        options: [
+                            { text: "🦠 Kontaminasi, keracunan makanan, cedera punggung", value: "correct", class: "storage" },
+                            { text: "💧 Tergelincir, iritasi kulit, keracunan, luka bakar uap", value: "wrong1", class: "storage" },
+                            { text: "⚡ Terjepit, kesetrum, gangguan pendengaran", value: "wrong2", class: "storage" }
+                        ],
+                        correctAnswer: "correct"
+                    },
+                    {
+                        question: "Dampak yang mungkin terjadi:",
+                        options: [
+                            { text: "☣️ Keracunan massal, sakit punggung", value: "correct", class: "storage" },
+                            { text: "🏥 Cedera fisik, penyakit akibat kerja", value: "wrong1", class: "storage" },
+                            { text: "🤕 Cedera tangan, luka serius, tuli", value: "wrong2", class: "storage" }
+                        ],
+                        correctAnswer: "correct"
+                    },
+                    {
+                        question: "Kontrol yang sudah ada:",
+                        options: [
+                            { text: "❄️ Freezer/chiller tersedia, area kimia dipisah, Alarm suhu digital, troli angkut, HACCP monitoring", value: "correct", class: "storage" },
+                            { text: "⚠️ Papan peringatan lantai basah, MSDS bahan kimia, Lantai anti-slip", value: "wrong1", class: "storage" },
+                            { text: "🔧 Guard mesin, tombol emergency stop, instalasi standar", value: "wrong2", class: "storage" }
+                        ],
+                        correctAnswer: "correct"
+                    }
+                ],
+                results: {
+                    perfect: {
+                        emoji: "🏆",
+                        title: "Ahli K3 Penyimpanan!",
+                        description: "Excellent! Anda memahami dengan sempurna keselamatan penyimpanan. Dari temperature control hingga ergonomics, pengetahuan K3 Anda sangat baik untuk storage management."
+                    },
+                    good: {
+                        emoji: "📦",
+                        title: "Paham K3 Penyimpanan",
+                        description: "Bagus! Anda memiliki understanding yang solid tentang storage safety. Terus tingkatkan knowledge tentang cold chain dan manual handling."
+                    },
+                    mixed: {
+                        emoji: "🏪",
+                        title: "Perlu Belajar K3 Penyimpanan",
+                        description: "Anda perlu meningkatkan pemahaman tentang storage safety. Fokus pada temperature hazards, chemical segregation, dan lifting techniques."
+                    }
+                }
+            },
+            sanitation: {
+                questions: [
+                    {
+                        question: "Potensi bahaya pada Kebersihan & Sanitasi:",
+                        options: [
+                            { text: "🦠 Mikroorganisme patogen (E. coli, Salmonella, dll)", value: "correct", class: "sanitation" },
+                            { text: "📦 Suhu tidak sesuai, bahan kimia tersimpan dekat makanan", value: "wrong1", class: "sanitation" },
+                            { text: "🧽 Lantai licin, bahan kimia (detergen, sanitizer)", value: "wrong2", class: "sanitation" }
+                        ],
+                        correctAnswer: "correct"
+                    },
+                    {
+                        question: "Risiko yang dapat terjadi:",
+                        options: [
+                            { text: "☣️ Keracunan makanan massal", value: "correct", class: "sanitation" },
+                            { text: "🦠 Kontaminasi, keracunan makanan, cedera punggung", value: "wrong1", class: "sanitation" },
+                            { text: "💧 Tergelincir, iritasi kulit, keracunan", value: "wrong2", class: "sanitation" }
+                        ],
+                        correctAnswer: "correct"
+                    },
+                    {
+                        question: "Dampak yang mungkin terjadi:",
+                        options: [
+                            { text: "🏥 Outbreak kesehatan konsumen", value: "correct", class: "sanitation" },
+                            { text: "☣️ Keracunan massal, sakit punggung", value: "wrong1", class: "sanitation" },
+                            { text: "🏥 Cedera fisik, penyakit akibat kerja", value: "wrong2", class: "sanitation" }
+                        ],
+                        correctAnswer: "correct"
+                    },
+                    {
+                        question: "Kontrol yang sudah ada:",
+                        options: [
+                            { text: "🧼 SOP cuci tangan, sanitasi alat, Pemeriksaan kesehatan pekerja, audit HACCP", value: "correct", class: "sanitation" },
+                            { text: "❄️ Freezer/chiller tersedia, area kimia dipisah, Alarm suhu digital", value: "wrong1", class: "sanitation" },
+                            { text: "⚠️ Papan peringatan lantai basah, MSDS bahan kimia", value: "wrong2", class: "sanitation" }
+                        ],
+                        correctAnswer: "correct"
+                    }
+                ],
+                results: {
+                    perfect: {
+                        emoji: "🏆",
+                        title: "Ahli K3 Sanitasi!",
+                        description: "Perfect! Anda memahami dengan sempurna food safety dan sanitation. Dari pathogen control hingga HACCP, pengetahuan K3 Anda excellent untuk food safety management."
+                    },
+                    good: {
+                        emoji: "🧼",
+                        title: "Paham K3 Sanitasi",
+                        description: "Bagus! Anda memiliki foundation yang solid dalam food safety. Terus develop knowledge tentang microbiology dan sanitation procedures."
+                    },
+                    mixed: {
+                        emoji: "🦠",
+                        title: "Perlu Belajar K3 Sanitasi",
+                        description: "Anda perlu meningkatkan pemahaman tentang food safety. Fokus pada pathogen prevention, personal hygiene, dan HACCP principles."
+                    }
+                }
+            },
+            environment: {
+                questions: [
+                    {
+                        question: "Potensi bahaya pada Lingkungan Umum Dapur:",
+                        options: [
+                            { text: "🌡️ Panas berlebih, kebisingan, kurang ventilasi, jam kerja panjang, stres kerja", value: "correct", class: "environment" },
+                            { text: "🦠 Mikroorganisme patogen (E. coli, Salmonella, dll)", value: "wrong1", class: "environment" },
+                            { text: "📦 Suhu tidak sesuai, bahan kimia tersimpan dekat makanan", value: "wrong2", class: "environment" }
+                        ],
+                        correctAnswer: "correct"
+                    },
+                    {
+                        question: "Risiko yang dapat terjadi:",
+                        options: [
+                            { text: "🥵 Heat stress, dehidrasi, kecelakaan akibat lelah", value: "correct", class: "environment" },
+                            { text: "☣️ Keracunan makanan massal", value: "wrong1", class: "environment" },
+                            { text: "🦠 Kontaminasi, keracunan makanan, cedera punggung", value: "wrong2", class: "environment" }
+                        ],
+                        correctAnswer: "correct"
+                    },
+                    {
+                        question: "Dampak yang mungkin terjadi:",
+                        options: [
+                            { text: "😰 Gangguan kesehatan, turnover tinggi", value: "correct", class: "environment" },
+                            { text: "🏥 Outbreak kesehatan konsumen", value: "wrong1", class: "environment" },
+                            { text: "☣️ Keracunan massal, sakit punggung", value: "wrong2", class: "environment" }
+                        ],
+                        correctAnswer: "correct"
+                    },
+                    {
+                        question: "Kontrol yang sudah ada:",
+                        options: [
+                            { text: "💨 Ventilasi ada, jadwal shift, Tambah exhaust, rotasi kerja, penyediaan air minum, briefing rutin", value: "correct", class: "environment" },
+                            { text: "🧼 SOP cuci tangan, sanitasi alat, Pemeriksaan kesehatan pekerja", value: "wrong1", class: "environment" },
+                            { text: "❄️ Freezer/chiller tersedia, area kimia dipisah", value: "wrong2", class: "environment" }
+                        ],
+                        correctAnswer: "correct"
+                    }
+                ],
+                results: {
+                    perfect: {
+                        emoji: "🏆",
+                        title: "Ahli K3 Lingkungan Dapur!",
+                        description: "Excellent! Anda memahami dengan sempurna occupational health di lingkungan dapur. Dari heat stress hingga ergonomics, pengetahuan K3 Anda sangat baik untuk kitchen management."
+                    },
+                    good: {
+                        emoji: "🏢",
+                        title: "Paham K3 Lingkungan Dapur",
+                        description: "Bagus! Anda memiliki awareness yang baik tentang workplace health. Terus tingkatkan understanding tentang ventilation dan work-life balance."
+                    },
+                    mixed: {
+                        emoji: "🌡️",
+                        title: "Perlu Belajar K3 Lingkungan",
+                        description: "Anda perlu meningkatkan pemahaman tentang occupational health. Fokus pada heat management, noise control, dan stress prevention."
+                    }
+                }
+            },
+            boiler: {
+                questions: [
+                    {
+                        question: "Potensi bahaya pada Boiler/Steam Cooker:",
+                        options: [
+                            { text: "💥 Tekanan tinggi, ledakan", value: "correct", class: "boiler" },
+                            { text: "🌡️ Panas berlebih, kebisingan, kurang ventilasi", value: "wrong1", class: "boiler" },
+                            { text: "🦠 Mikroorganisme patogen (E. coli, Salmonella, dll)", value: "wrong2", class: "boiler" }
+                        ],
+                        correctAnswer: "correct"
+                    },
+                    {
+                        question: "Risiko yang dapat terjadi:",
+                        options: [
+                            { text: "💀 Cedera fatal, kerusakan fasilitas", value: "correct", class: "boiler" },
+                            { text: "🥵 Heat stress, dehidrasi, kecelakaan akibat lelah", value: "wrong1", class: "boiler" },
+                            { text: "☣️ Keracunan makanan massal", value: "wrong2", class: "boiler" }
+                        ],
+                        correctAnswer: "correct"
+                    },
+                    {
+                        question: "Dampak yang mungkin terjadi:",
+                        options: [
+                            { text: "⚰️ Luka fatal, kerugian besar", value: "correct", class: "boiler" },
+                            { text: "😰 Gangguan kesehatan, turnover tinggi", value: "wrong1", class: "boiler" },
+                            { text: "🏥 Outbreak kesehatan konsumen", value: "wrong2", class: "boiler" }
+                        ],
+                        correctAnswer: "correct"
+                    },
+                    {
+                        question: "Kontrol yang sudah ada:",
+                        options: [
+                            { text: "🔧 SOP boiler, inspeksi rutin, Safety valve, sertifikasi operator boiler", value: "correct", class: "boiler" },
+                            { text: "💨 Ventilasi ada, jadwal shift, Tambah exhaust, rotasi kerja", value: "wrong1", class: "boiler" },
+                            { text: "🧼 SOP cuci tangan, sanitasi alat, Pemeriksaan kesehatan pekerja", value: "wrong2", class: "boiler" }
+                        ],
+                        correctAnswer: "correct"
+                    }
+                ],
+                results: {
+                    perfect: {
+                        emoji: "🏆",
+                        title: "Ahli K3 Boiler!",
+                        description: "Outstanding! Anda memahami dengan sempurna high-risk equipment safety. Dari pressure vessel hazards hingga emergency procedures, pengetahuan K3 Anda excellent untuk industrial kitchen operations."
+                    },
+                    good: {
+                        emoji: "🔥",
+                        title: "Paham K3 Boiler",
+                        description: "Bagus! Anda memiliki understanding yang solid tentang boiler safety. Terus tingkatkan knowledge tentang pressure systems dan emergency response."
+                    },
+                    mixed: {
+                        emoji: "💥",
+                        title: "Perlu Belajar K3 Boiler",
+                        description: "Anda perlu meningkatkan pemahaman tentang high-pressure equipment safety. Fokus pada pressure vessel inspection, safety devices, dan operator certification."
+                    }
+                }
+            }
+        };
+
+        function selectType(type) {
+            gameState.selectedType = type;
+            gameState.currentQuestion = 2;
+            showNextQuestion();
+        }
+
+        function selectAnswer(answer) {
+            gameState.answers.push(answer);
+            
+            if (gameState.currentQuestion < 5) {
+                gameState.currentQuestion++;
+                showNextQuestion();
+            } else {
+                showResult();
+            }
+        }
+
+        function showNextQuestion() {
+            updateProgress();
+            
+            const questionData = gameData[gameState.selectedType].questions[gameState.currentQuestion - 2];
+            
+            document.getElementById('questionNumber').textContent = `Pertanyaan ${gameState.currentQuestion} dari 5`;
+            document.getElementById('questionText').textContent = questionData.question;
+            
+            const optionsContainer = document.getElementById('optionsContainer');
+            optionsContainer.innerHTML = '';
+            
+            questionData.options.forEach(option => {
+                const button = document.createElement('button');
+                button.className = `option-btn ${option.class}`;
+                button.textContent = option.text;
+                button.onclick = () => selectAnswer(option.value);
+                optionsContainer.appendChild(button);
+            });
+        }
+
+        function updateProgress() {
+            const progress = (gameState.currentQuestion - 1) / 5 * 100;
+            document.getElementById('progressFill').style.width = progress + '%';
+        }
+
+        function showResult() {
+            updateProgress();
+            
+            const typeData = gameData[gameState.selectedType];
+            const correctAnswers = typeData.questions.map(q => q.correctAnswer);
+            const userAnswers = gameState.answers;
+            
+            let matchCount = 0;
+            for (let i = 0; i < correctAnswers.length; i++) {
+                if (correctAnswers[i] === userAnswers[i]) {
+                    matchCount++;
+                }
+            }
+            
+            let resultType;
+            if (matchCount >= 3) {
+                resultType = 'perfect';
+            } else if (matchCount >= 2) {
+                resultType = 'good';
+            } else {
+                resultType = 'mixed';
+            }
+            
+            const result = typeData.results[resultType];
+            
+            document.getElementById('questionContainer').style.display = 'none';
+            document.getElementById('resultContainer').style.display = 'block';
+            
+            document.getElementById('resultEmoji').textContent = result.emoji;
+            document.getElementById('resultTitle').textContent = result.title;
+            document.getElementById('resultDescription').textContent = result.description;
+        }
+
+        function restartGame() {
+            gameState = {
+                currentQuestion: 1,
+                selectedType: '',
+                answers: []
+            };
+            
+            document.getElementById('questionContainer').style.display = 'block';
+            document.getElementById('resultContainer').style.display = 'none';
+            
+            document.getElementById('questionNumber').textContent = 'Pertanyaan 1 dari 5';
+            document.getElementById('questionText').textContent = 'Aktivitas - Pilih aktivitas kerja yang akan dievaluasi:';
+            document.getElementById('progressFill').style.width = '0%';
+            
+            const optionsContainer = document.getElementById('optionsContainer');
+            optionsContainer.innerHTML = `
+                <button class="option-btn prep" onclick="selectType('prep')">🔪 Persiapan Bahan (Memotong daging/sayur, dll)</button>
+                <button class="option-btn cooking" onclick="selectType('cooking')">🍳 Memasak (menggoreng, merebus, memanggang, steam)</button>
+                <button class="option-btn machine" onclick="selectType('machine')">⚙️ Menggunakan Mesin (blender, mixer, conveyor, oven industri)</button>
+                <button class="option-btn washing" onclick="selectType('washing')">🧽 Pencucian (dishwashing, cleaning)</button>
+                <button class="option-btn storage" onclick="selectType('storage')">📦 Penyimpanan (bahan baku & produk jadi)</button>
+                <button class="option-btn sanitation" onclick="selectType('sanitation')">🧼 Kebersihan & Sanitasi (Food Safety)</button>
+                <button class="option-btn environment" onclick="selectType('environment')">🏢 Lingkungan Umum Dapur</button>
+                <button class="option-btn boiler" onclick="selectType('boiler')">🔥 Industri Besar – Boiler/Steam Cooker</button>
+            `;
+        }
+    </script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'97cd4ceff04e9fad',t:'MTc1NzQ5MDI3MS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
